@@ -323,3 +323,131 @@
         }
     }
 */
+
+// That's all for now! You've learned about variables, if/else statements, and loops in C#.
+// Now we learn methods in C#
+
+// What is method?
+/*
+    Method is a block of code that performs a specific task and can be called upon when needed.
+    Method = action
+    Methods help to organize code, make it reusable, and improve readability.
+    How it looks:
+    
+    MethodName(condition) // Here we call our method
+
+    returnType MethodName(parameters) // Here we declare our method
+    {
+        method body // code to be executed
+    }
+*/
+
+// Quest 8 + Quest 9: Create a Method for Player Status Check and battle simulation with critical hits and health potions
+
+/*
+    int health = 100;
+    int mobAttack = 15, playerAttack = 25;
+    string playerName = "Winker21";
+    bool isAlive = true;
+    bool hasPotion = false;
+    Random random = new Random();
+    Console.WriteLine($"Player Name: {playerName} | HP: {health} | ATK: {playerAttack}");
+
+    void TakeDamage(int damage)
+    {
+        int criticalHitChance = random.Next(1, 101); // Random number between 1 and 100
+        int criticalDamage = 0;
+
+        if (criticalHitChance <= 20)
+        {
+            criticalDamage = damage * 2;
+            health -= criticalDamage;
+            Console.WriteLine("Critical Hit!");
+            Console.WriteLine($"Player get {criticalDamage} damage. Current HP: {health}");
+        }
+        else
+        {
+            health -= damage;
+            Console.WriteLine($"Player get {damage} damage. Current HP: {health}");
+        }
+    }
+
+    void TryUsePotion()
+    {
+        if (!hasPotion)
+        {
+            return; // No need to use potion
+        }
+        else if (health <= 30)
+        {
+            Console.WriteLine("Using health potion...");
+            HealPlayer(40);
+            hasPotion = false; // Potion used
+        }
+    }
+
+    void HealPlayer(int healAmount)
+    {
+        health += healAmount;
+        Console.WriteLine($"Player healed. Current HP: {health}");
+    }
+
+    void CheckPlayerStatus()
+    {
+        if (health <= 0) 
+        {
+            Console.WriteLine("Player Dead!");
+            return;
+        }
+
+        if (health > 70)
+        {
+            Console.WriteLine("Status is good");
+        }
+        else if (health >= 31 && health <= 70)
+        {
+            Console.WriteLine("Status is wounded");
+        }
+        else
+        {
+            Console.WriteLine("Status is critical");
+            TryUsePotion();
+        }
+    }
+
+    bool IsAliveCheck()
+    {
+        if (health <= 0)
+        {
+            isAlive = false;
+            return isAlive;
+        }
+        else
+        {
+            return isAlive;
+        }
+    }
+
+    Console.WriteLine("Battle Start!"); 
+    while (IsAliveCheck())
+    {
+        TakeDamage(mobAttack);
+        if (health <= 0)
+        {
+            CheckPlayerStatus();
+            break;
+        }
+        if (random.Next(1, 4) == 2 && !hasPotion) // 1 in 3 chance to get a potion
+        {
+            hasPotion = true;
+            Console.WriteLine("God's senting to player a potion!");
+        }
+
+        // важно: вызываем проверку статуса каждый раунд,
+        // чтобы при критическом HP и наличии зелья оно использовалось сразу
+        CheckPlayerStatus();
+        isAlive = IsAliveCheck();
+    }
+*/
+
+// You've learned about methods in C# and how to use them to organize your code better.
