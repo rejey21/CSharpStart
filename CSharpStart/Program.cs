@@ -1,4 +1,53 @@
-﻿// Starting code of a simple C# console application
+﻿// Here is the complete code for a simple C# console application that simulates a battle between a player and a mob using classes and methods.
+using System;
+/*
+class Program
+{
+    static void Main()
+    {
+        Player player = new("Winker21", 100, 25);
+        Enemy mob = new("Goblin", 15);
+
+        Random random = new Random();
+
+        Console.WriteLine("Battle Start!");
+
+        while (player.IsAlive() && mob.IsAlive())
+        {
+            mob.AttackPlayer(player);
+            player.AttackEnemy(mob);
+
+            if (!player.IsAlive())
+                break;
+
+            if (!mob.IsAlive())
+                break;
+
+            if (random.Next(1, 4) == 2 && !player.HasPotion)
+            {
+                player.HasPotion = true;
+                Console.WriteLine("God sends a potion!");
+            }
+
+            player.PrintStatus();
+            player.TryUsePotion();
+            Console.WriteLine("---- NEXT TURN ----");
+        }
+
+        if (!player.IsAlive())
+        {
+            Console.WriteLine("Mob wins!");
+        }
+        else if (!mob.IsAlive())
+        {
+            Console.WriteLine("Player is wins!");
+        }
+    }
+}
+*/
+
+
+// Starting code of a simple C# console application
 
 /*
     Console.WriteLine("Hello, GameDev!");
@@ -451,3 +500,163 @@
 */
 
 // You've learned about methods in C# and how to use them to organize your code better.
+// Classes and OOP in C#
+
+// What is class?
+/*
+    A class is a blueprint for creating objects. It defines the properties (attributes) and behaviors (methods) that the objects created from the class will have.
+    Class = blueprint
+    Classes help to encapsulate data and functionality, making code more modular and easier to manage.
+    How it looks:
+
+    class ClassName // Here we declare our class
+    {
+        // properties and methods
+    }
+
+    Object = instance of a class
+    How it looks:
+
+    ClassName objectName = new ClassName(); // Here we create an object from a class
+*/
+
+// For example, let's create a simple class for a Player:
+/*
+    class Player
+    {
+        // Properties
+        public string Name;
+        public int Health;
+        public int AttackPower;
+        // Constructor
+        public Player(string name, int health, int attackPower)
+        {
+            Name = name;
+            Health = health;
+            AttackPower = attackPower;
+        }
+        // Method
+        public void Attack(Player target)
+        {
+            target.Health -= AttackPower;
+            Console.WriteLine($"{Name} attacks {target.Name} for {AttackPower} damage!");
+        }
+    }
+*/
+
+// Quest 10 && Quest 11: Create Player and Mob Classes and Simulate a Battle
+/*
+    class Player
+    {
+        public string Name;
+        public int CurrentHealth;
+        public int MaxHealth = 100;
+        public int Attack = 25;
+        public bool HasPotion;
+
+        static Random random = new Random();
+
+        public Player(string name, int currentHealth, int attack)
+        {
+            Name = name;
+            CurrentHealth = currentHealth;
+            Attack = attack;
+            HasPotion = false;
+        }
+
+        public bool IsAlive()
+        {
+            return CurrentHealth > 0;
+        }
+
+        public void AttackEnemy(Enemy enemy)
+        {
+            enemy.TakeDamage(Attack);
+        }   
+
+        public void TakeDamage(int damage)
+        {
+            if (random.Next(1, 101) <= 20)
+            {
+                damage *= 2;
+                Console.WriteLine("Critical Hit!");
+            }
+
+            CurrentHealth -= damage;
+            Console.WriteLine($"{Name} takes {damage} damage. HP: {CurrentHealth}");
+        }
+
+        public void Heal(int amount)
+        {
+            CurrentHealth += amount;
+            if (CurrentHealth > MaxHealth)
+            {
+                CurrentHealth = MaxHealth;
+                Console.WriteLine($"Your HP not can be more than {MaxHealth}. So we restore to full your HP: {CurrentHealth}");
+                return;
+            }
+            Console.WriteLine($"{Name} healed for {amount}. HP: {CurrentHealth}");
+        }
+
+        public void TryUsePotion()
+        {
+            if (!HasPotion || CurrentHealth > 30)
+                return;
+
+            Console.WriteLine($"{Name} uses a potion!");
+            Heal(40);
+            HasPotion = false;
+        }
+
+        public void PrintStatus()
+        {
+            if (CurrentHealth > 70)
+            {
+                Console.WriteLine("Status: Good");
+            }
+            else if (CurrentHealth > 30 && CurrentHealth <= 70)
+            {
+                Console.WriteLine("Status: Wounded");
+            }
+            else
+                Console.WriteLine("Status: Critical");
+        }
+    }
+
+    class Enemy
+    {
+        public string Name;
+        public int Health = 100;
+        public int Attack = 15;
+
+        static Random random = new Random();
+
+        public Enemy(string name, int attack)
+        {
+            Name = name;
+            Attack = attack;
+        }
+
+        public void AttackPlayer(Player player)
+        {
+            player.TakeDamage(Attack);
+        }
+
+        public bool IsAlive()
+        {
+            return Health > 0;
+        }
+
+        public void TakeDamage(int damage)
+        {
+            if (random.Next(1, 101) <= 20)
+            {
+                damage *= 2;
+                Console.WriteLine("Critical Hit!");
+            }
+
+            Health -= damage;
+            Console.WriteLine($"{Name} takes {damage} damage. HP: {Health}");
+        }
+    }
+*/
