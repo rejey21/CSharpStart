@@ -1,12 +1,11 @@
 ﻿// Here is the complete code for a simple C# console application that simulates a battle between a player and a mob using classes and methods.
 using System;
-/*
 class Program
 {
     static void Main()
     {
-        Player player = new("Winker21", 100, 25);
-        Enemy mob = new("Goblin", 15);
+        Player player = new("Winker21", 100, 10);
+        Enemy mob = new("Goblin", 100, 10);
 
         Random random = new Random();
 
@@ -25,8 +24,16 @@ class Program
 
             if (random.Next(1, 4) == 2 && !player.HasPotion)
             {
-                player.HasPotion = true;
+                player.GivePotion();
                 Console.WriteLine("God sends a potion!");
+            }
+
+            // Исправлено: random.Next(1, 2) всегда возвращает 1, поэтому условие никогда не выполнится.
+            // Вероятно, имелось в виду random.Next(1, 3) == 2 (шанс 1 к 2).
+            // Также исправлено условие: проверяем, что у игрока нет брони, и выдаём её.
+            if (random.Next(1, 10) == 4 && player.Armor != "Leather Armor")
+            {
+                player.GiveEquipment("Leather Armor");
             }
 
             player.PrintStatus();
@@ -44,7 +51,6 @@ class Program
         }
     }
 }
-*/
 
 
 // Starting code of a simple C# console application
@@ -284,7 +290,7 @@ class Program
 /*
     for (int attackCount = 1; attackCount <= 6; attackCount++) 
     {
-        health -= mobAttack; // Attack our charachter
+        health -= mobAttack; // Attack our character
 
         if (health > 70)
         {
@@ -660,3 +666,205 @@ class Program
         }
     }
 */
+
+// The next lesson will be about Encapsulation and Properties in C# Classes.
+// You can't allow anyone to change your health directly. You need to create special methods for that.
+/*
+    The Object itself is responsible for managing its own state and behavior.
+    In Unity and other OOP frameworks, this principle helps to maintain data integrity and encapsulation.
+    For example:
+
+    player.CurrentHealth = 9999; // This is bad practice
+    
+    You need to hide data, control access to it, and provide methods to modify it safely.
+    First you need to do fields private, and then create public properties with getters and setters.
+    For example:
+
+    public int CurrentHealth; // This is bad practice
+    
+    private int currentHealth; // This is good practice
+
+    Now you don't allow anyone to change your health directly.
+    
+    Now talk about properties.
+    Properties are special methods that provide controlled access to the fields of a class.
+    They allow you to get (read) or set (write) the values of private fields while enforcing any necessary validation or logic.
+    How it looks:
+    
+    public int CurrentHealth
+    {
+        get { return currentHealth; } // Getter method to read the value
+    }
+
+    In this example, we have a read-only property CurrentHealth that allows access to the private field currentHealth.
+    You can do it moree easier:
+
+    public int CurrentHealth => currentHealth; // Expression-bodied property (read-only)
+
+    We are finished with properties. Now let's talk about Clamp
+    Clamp is a method that restricts a value to be within a specified range.
+    For example, if you want to ensure that a player's health does not exceed a maximum value or drop below zero, you can use Clamp.
+    How it looks:
+    
+    private void SetHealth(int value)
+    {
+        currentHealth = Math.Clamp(value, 0, MaxHealth); // Clamp the value between 0 and MaxHealth
+    }
+
+    This ensures that currentHealth will always be between 0 and MaxHealth. Any attempt to set it outside this range will be adjusted accordingly.
+    In the games, clamping is often used to maintain game balance and prevent unexpected behavior.
+*/
+
+// Quest 12: Implement Encapsulation and Properties in Player and Mob Classes
+public class Player
+{
+    public string Name { get; }
+    public int CurrentHealth => currentHealth;
+
+    private int currentHealth;
+    public int MaxHealth => maxHealth;
+
+    private int maxHealth = 100;
+    public int Attack { get; }
+    public bool HasPotion { get; private set; }
+    public string Armor { get; private set; } = null;
+    private bool armorGiven = false;
+
+    static Random random = new Random();
+
+    public Player(string name, int maxHealth, int attack)
+    {
+        Name = name;
+        Attack = attack;
+        this.maxHealth = maxHealth;
+        this.currentHealth = maxHealth;
+    }
+
+    public bool IsAlive()
+    {
+        return CurrentHealth > 0;
+    }
+
+    public void AttackEnemy(Enemy enemy)
+    {
+        enemy.TakeDamage(Attack);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (random.Next(1, 101) <= 20)
+        {
+            damage *= 2;
+            Console.WriteLine("Critical Hit!");
+        }
+
+        SetHealth(currentHealth - damage);
+        Console.WriteLine($"{Name} takes {damage} damage. HP: {CurrentHealth}");
+    }
+
+    public void Heal(int amount)
+    {
+        SetHealth(currentHealth + amount);
+        Console.WriteLine($"{Name} healed for {amount}. HP: {CurrentHealth}");
+    }
+
+    public void GivePotion()
+    {
+        HasPotion = true;
+    }
+
+    public void RemovePotion()
+    {
+        HasPotion = false;
+    }
+
+    public void TryUsePotion()
+    {
+        if (!HasPotion || CurrentHealth > 30)
+            return;
+
+        Console.WriteLine($"{Name} uses a potion!");
+        Heal(50);
+        RemovePotion();
+    }
+
+    public void PrintStatus()
+    {
+        if (CurrentHealth > 70)
+        {
+            Console.WriteLine("Status: Good");
+        }
+        else if (CurrentHealth > 30 && CurrentHealth <= 70)
+        {
+            Console.WriteLine("Status: Wounded");
+        }
+        else
+            Console.WriteLine("Status: Critical");
+    }
+
+    private void SetHealth(int value)
+    {
+        currentHealth = Math.Clamp(value, 0, MaxHealth);
+    }
+
+    public void GiveEquipment(string armorName)
+    {
+        if (armorGiven || string.IsNullOrWhiteSpace(armorName)) 
+            return;
+
+        Armor = armorName;
+        armorGiven = true;
+
+        maxHealth += 10;
+        SetHealth(currentHealth + 10);
+
+        Console.WriteLine($"{Name} received {armorName}. Max HP increased to {MaxHealth}.");
+    }
+}
+
+public class Enemy
+{
+        public string Name { get; }
+        public int CurrentHealth => currentHealth;
+
+        private int currentHealth;
+        public int MaxHealth { get; } = 100;
+        public int Attack { get; }
+
+        static Random random = new Random();
+
+        public Enemy(string name, int maxHealth, int attack)
+        {
+            Name = name;
+            Attack = attack;
+            MaxHealth = maxHealth;
+            currentHealth = MaxHealth;
+        }
+
+        public void AttackPlayer(Player player)
+        {
+            player.TakeDamage(Attack);
+        }
+
+        public bool IsAlive()
+        {
+            return currentHealth > 0;
+        }
+
+        public void TakeDamage(int damage)
+        {
+            if (random.Next(1, 101) <= 20)
+            {
+                damage *= 2;
+                Console.WriteLine("Critical Hit!");
+            }
+
+            SetHealth(currentHealth - damage);
+            Console.WriteLine($"{Name} takes {damage} damage. HP: {currentHealth}");
+        }
+
+        private void SetHealth(int value)
+        {
+            currentHealth = Math.Clamp(value, 0, MaxHealth);
+        }
+}
