@@ -690,10 +690,14 @@ class Program
     Properties are special methods that provide controlled access to the fields of a class.
     They allow you to get (read) or set (write) the values of private fields while enforcing any necessary validation or logic.
     How it looks:
+
+    private int currentHealth; // Private field
     
-    public int CurrentHealth
+    public int CurrentHealth // Public property
     {
         get { return currentHealth; } // Getter method to read the value
+        set { currentHealth = value; } // Setter method to write the value
+        private set { currentHealth = value; } // Setter method to write the value only within the class (if you need to change value only in your class)
     }
 
     In this example, we have a read-only property CurrentHealth that allows access to the private field currentHealth.
@@ -713,142 +717,43 @@ class Program
 
     This ensures that currentHealth will always be between 0 and MaxHealth. Any attempt to set it outside this range will be adjusted accordingly.
     In the games, clamping is often used to maintain game balance and prevent unexpected behavior.
+
 */
 
 // Quest 12: Implement Encapsulation and Properties in Player and Mob Classes
-public class Player
-{
-    public string Name { get; }
-    public int CurrentHealth => currentHealth;
-
-    private int currentHealth;
-    public int MaxHealth => maxHealth;
-
-    private int maxHealth = 100;
-    public int Attack { get; }
-    public bool HasPotion { get; private set; }
-    public string Armor { get; private set; } = null;
-    private bool armorGiven = false;
-
-    static Random random = new Random();
-
-    public Player(string name, int maxHealth, int attack)
+/*
+    public class Player
     {
-        Name = name;
-        Attack = attack;
-        this.maxHealth = maxHealth;
-        this.currentHealth = maxHealth;
-    }
-
-    public bool IsAlive()
-    {
-        return CurrentHealth > 0;
-    }
-
-    public void AttackEnemy(Enemy enemy)
-    {
-        enemy.TakeDamage(Attack);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        if (random.Next(1, 101) <= 20)
-        {
-            damage *= 2;
-            Console.WriteLine("Critical Hit!");
-        }
-
-        SetHealth(currentHealth - damage);
-        Console.WriteLine($"{Name} takes {damage} damage. HP: {CurrentHealth}");
-    }
-
-    public void Heal(int amount)
-    {
-        SetHealth(currentHealth + amount);
-        Console.WriteLine($"{Name} healed for {amount}. HP: {CurrentHealth}");
-    }
-
-    public void GivePotion()
-    {
-        HasPotion = true;
-    }
-
-    public void RemovePotion()
-    {
-        HasPotion = false;
-    }
-
-    public void TryUsePotion()
-    {
-        if (!HasPotion || CurrentHealth > 30)
-            return;
-
-        Console.WriteLine($"{Name} uses a potion!");
-        Heal(50);
-        RemovePotion();
-    }
-
-    public void PrintStatus()
-    {
-        if (CurrentHealth > 70)
-        {
-            Console.WriteLine("Status: Good");
-        }
-        else if (CurrentHealth > 30 && CurrentHealth <= 70)
-        {
-            Console.WriteLine("Status: Wounded");
-        }
-        else
-            Console.WriteLine("Status: Critical");
-    }
-
-    private void SetHealth(int value)
-    {
-        currentHealth = Math.Clamp(value, 0, MaxHealth);
-    }
-
-    public void GiveEquipment(string armorName)
-    {
-        if (armorGiven || string.IsNullOrWhiteSpace(armorName)) 
-            return;
-
-        Armor = armorName;
-        armorGiven = true;
-
-        maxHealth += 10;
-        SetHealth(currentHealth + 10);
-
-        Console.WriteLine($"{Name} received {armorName}. Max HP increased to {MaxHealth}.");
-    }
-}
-
-public class Enemy
-{
         public string Name { get; }
         public int CurrentHealth => currentHealth;
 
         private int currentHealth;
-        public int MaxHealth { get; } = 100;
+        public int MaxHealth => maxHealth;
+
+        private int maxHealth = 100;
         public int Attack { get; }
+        public bool HasPotion { get; private set; }
+        public string Armor { get; private set; } = null;
+        private bool armorGiven = false;
 
         static Random random = new Random();
 
-        public Enemy(string name, int maxHealth, int attack)
+        public Player(string name, int maxHealth, int attack)
         {
             Name = name;
             Attack = attack;
-            MaxHealth = maxHealth;
-            currentHealth = MaxHealth;
-        }
-
-        public void AttackPlayer(Player player)
-        {
-            player.TakeDamage(Attack);
+            this.maxHealth = maxHealth;
+            this.currentHealth = maxHealth;
         }
 
         public bool IsAlive()
         {
-            return currentHealth > 0;
+            return CurrentHealth > 0;
+        }
+
+        public void AttackEnemy(Enemy enemy)
+        {
+            enemy.TakeDamage(Attack);
         }
 
         public void TakeDamage(int damage)
@@ -860,11 +765,264 @@ public class Enemy
             }
 
             SetHealth(currentHealth - damage);
-            Console.WriteLine($"{Name} takes {damage} damage. HP: {currentHealth}");
+            Console.WriteLine($"{Name} takes {damage} damage. HP: {CurrentHealth}");
+        }
+
+        public void Heal(int amount)
+        {
+            SetHealth(currentHealth + amount);
+            Console.WriteLine($"{Name} healed for {amount}. HP: {CurrentHealth}");
+        }
+
+        public void GivePotion()
+        {
+            HasPotion = true;
+        }
+
+        public void RemovePotion()
+        {
+            HasPotion = false;
+        }
+
+        public void TryUsePotion()
+        {
+            if (!HasPotion || CurrentHealth > 30)
+                return;
+
+            Console.WriteLine($"{Name} uses a potion!");
+            Heal(50);
+            RemovePotion();
+        }
+
+        public void PrintStatus()
+        {
+            if (CurrentHealth > 70)
+            {
+                Console.WriteLine("Status: Good");
+            }
+            else if (CurrentHealth > 30 && CurrentHealth <= 70)
+            {
+                Console.WriteLine("Status: Wounded");
+            }
+            else
+                Console.WriteLine("Status: Critical");
         }
 
         private void SetHealth(int value)
         {
             currentHealth = Math.Clamp(value, 0, MaxHealth);
         }
+
+        public void GiveEquipment(string armorName)
+        {
+            if (armorGiven || string.IsNullOrWhiteSpace(armorName)) 
+                return;
+
+            Armor = armorName;
+            armorGiven = true;
+
+            maxHealth += 10;
+            SetHealth(currentHealth + 10);
+
+            Console.WriteLine($"{Name} received {armorName}. Max HP increased to {MaxHealth}.");
+        }
+    }
+
+    public class Enemy
+    {
+            public string Name { get; }
+            public int CurrentHealth => currentHealth;
+
+            private int currentHealth;
+            public int MaxHealth { get; } = 100;
+            public int Attack { get; }
+
+            static Random random = new Random();
+
+            public Enemy(string name, int maxHealth, int attack)
+            {
+                Name = name;
+                Attack = attack;
+                MaxHealth = maxHealth;
+                currentHealth = MaxHealth;
+            }
+
+            public void AttackPlayer(Player player)
+            {
+                player.TakeDamage(Attack);
+            }
+
+            public bool IsAlive()
+            {
+                return currentHealth > 0;
+            }
+
+            public void TakeDamage(int damage)
+            {
+                if (random.Next(1, 101) <= 20)
+                {
+                    damage *= 2;
+                    Console.WriteLine("Critical Hit!");
+                }
+
+                SetHealth(currentHealth - damage);
+                Console.WriteLine($"{Name} takes {damage} damage. HP: {currentHealth}");
+            }
+
+            private void SetHealth(int value)
+            {
+                currentHealth = Math.Clamp(value, 0, MaxHealth);
+            }
+    }
+*/
+
+// Let's tolk about Inheritance in C# Classes.
+/*
+    Inheritance is a fundamental concept in object-oriented programming (OOP) that allows a class (called the derived class or child class)
+    to inherit properties and methods from another class (called the base class or parent class).
+    This promotes code reusability and establishes a hierarchical relationship between classes.
+    How it looks:
+
+    class BaseClass
+    {
+        // Base class properties and methods
+    }
+
+    class DerivedClass : BaseClass
+    {
+        // Derived class properties and methods
+    }
+
+    In this example, DerivedClass inherits from BaseClass, meaning it has access to all public and protected members of BaseClass.
+    The derived class can also override methods from the base class to provide specific implementations.
+    For example:
+
+    class Animal
+    {
+        public void Speak()
+        {
+            Console.WriteLine("Animal speaks");
+        }
+    }
+
+    class Dog : Animal
+    {
+        public void Bark()
+        {
+            Console.WriteLine("Dog barks");
+        }
+    }
+
+    In this example, Dog inherits from Animal, so it can use the Speak method in addition to its own Bark method.
+    Inheritance is useful for creating a common interface for related classes and for sharing code among them.
+
+    virtual and override keywords are used in inheritance to allow derived classes to provide specific implementations of methods defined in the base class.
+    The virtual keyword is used in the base class to indicate that a method can be overridden in derived classes.
+    The override keyword is used in the derived class to provide a new implementation of the virtual method.
+    How it looks:
+
+    class BaseClass
+    {
+        public virtual void SomeMethod()
+        {
+            // Base class implementation
+        }
+    }
+
+    class DerivedClass : BaseClass
+    {
+        public override void SomeMethod()
+        {
+            // Derived class implementation
+        }
+    }
+
+    In this example, SomeMethod in BaseClass is marked as virtual, allowing DerivedClass to override it with its own implementation.
+    This mechanism enables polymorphism, where a derived class can be treated as an instance of the base class, but with its own specific behavior.
+    And we can call protected members from base class in derived class.
+    How it looks:
+    class BaseClass
+    {
+        protected int someValue;
+        public BaseClass()
+        {
+            someValue = 42;
+        }
+    }
+
+    class DerivedClass : BaseClass
+    {
+        public void PrintValue()
+        {
+            Console.WriteLine(someValue); // Accessing protected member from base class
+        }
+    }
+
+    In this example, DerivedClass can access the protected member someValue from BaseClass.
+    That's all for inheritance in C# classes. Now let's implement it in our Player and Mob classes.
+*/
+
+class Character
+{
+    public string Name { get; }
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
+    public int Attack { get; protected set; }
+
+    protected int maxHealth = 100;
+    protected int currentHealth;
+
+    protected static Random random = new Random();
+    public Character(string name, int maxHealth, int attack)
+    {
+        Name = name;
+        this.maxHealth = maxHealth;
+        currentHealth = maxHealth;
+        Attack = attack;
+    }
+    public bool IsAlive()
+    {
+        return CurrentHealth > 0;
+    }
+
+    // Method for dealing damage to the character
+    public virtual void DealDamage(int damage)
+    {
+        if (random.Next(1, 101) <= 20)
+        {
+            damage *= 2;
+            Console.WriteLine($"{Name} received a Critical Hit!");
+        }
+
+        SetHealth(currentHealth - damage);
+        Console.WriteLine($"{Name} takes {damage} damage. HP: {CurrentHealth}");
+    }
+
+    // Method for setting health with clamping
+    protected void SetHealth(int amount)
+    {
+        currentHealth = Math.Clamp(amount , 0, MaxHealth);
+    }
+
+    // Method for healing the character
+    public virtual void Heal(int amount)
+    {
+        SetHealth(CurrentHealth + amount);
+        Console.WriteLine($"{Name} healed for {amount}. HP: {CurrentHealth}");
+    }
+
+    // Method to print the character's status
+    public void PrintStatus()
+    {
+        if (currentHealth > maxHealth * 0.7)
+        {
+            Console.WriteLine("Status: Good");
+        }
+        else if (currentHealth > maxHealth * 0.3 && currentHealth < maxHealth * 0.7)
+        {
+            Console.WriteLine("Status: Wounded");
+        }
+        else
+            Console.WriteLine("Status: Critical");
+    }
 }
