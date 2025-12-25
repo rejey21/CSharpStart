@@ -4,7 +4,7 @@ class Program
 {
     static void Main()
     {
-        Player player = new("Winker21", 100, 10);
+        Player player = new("Winker21", 100, 15);
         Enemy mob = new("Goblin", 100, 10);
 
         Random random = new Random();
@@ -22,16 +22,13 @@ class Program
             if (!mob.IsAlive())
                 break;
 
-            if (random.Next(1, 4) == 2 && !player.HasPotion)
+            // A little up chance to get a potion or equipment each turn
+            if (random.Next(1, 8) == 4 && !player.HasPotion)
             {
                 player.GivePotion();
-                Console.WriteLine("God sends a potion!");
             }
 
-            // Исправлено: random.Next(1, 2) всегда возвращает 1, поэтому условие никогда не выполнится.
-            // Вероятно, имелось в виду random.Next(1, 3) == 2 (шанс 1 к 2).
-            // Также исправлено условие: проверяем, что у игрока нет брони, и выдаём её.
-            if (random.Next(1, 10) == 4 && player.Armor != "Leather Armor")
+            if (random.Next(1, 12) == 4 && player.Armor != "Leather Armor")
             {
                 player.GiveEquipment("Leather Armor");
             }
@@ -41,14 +38,7 @@ class Program
             Console.WriteLine("---- NEXT TURN ----");
         }
 
-        if (!player.IsAlive())
-        {
-            Console.WriteLine("Mob wins!");
-        }
-        else if (!mob.IsAlive())
-        {
-            Console.WriteLine("Player is wins!");
-        }
+        Console.WriteLine(mob.IsAlive() ? "Mob wins!" : "Player wins!");
     }
 }
 
@@ -1049,6 +1039,11 @@ class Player : Character
         Console.WriteLine($"{Name} uses potion!");
         Heal(40);
         HasPotion = false;
+    }
+
+    public void AttackEnemy(Enemy enemy)
+    {
+        enemy.DealDamage(Attack);
     }
 
     public void GiveEquipment(string armorName)
