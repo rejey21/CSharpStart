@@ -1026,3 +1026,73 @@ class Character
             Console.WriteLine("Status: Critical");
     }
 }
+
+class Player : Character
+{
+    public bool HasPotion { get; private set; }
+    public string Armor { get; private set; } = "No Armor";
+    private bool armorGiven;
+
+    public Player(string name, int maxHealth, int attack) : base(name, maxHealth, attack) { }
+
+    public void GivePotion()
+    {
+        HasPotion = true;
+        Console.WriteLine($"{Name} received a potion!");
+    }
+
+    public void TryUsePotion()
+    {
+        if (!HasPotion || currentHealth > MaxHealth * 0.3)
+            return;
+
+        Console.WriteLine($"{Name} uses potion!");
+        Heal(40);
+        HasPotion = false;
+    }
+
+    public void GiveEquipment(string armorName)
+    {
+        if (armorGiven || string.IsNullOrWhiteSpace(armorName))
+            return;
+
+        Armor = armorName;
+        armorGiven = true;
+
+        maxHealth += 10;
+        SetHealth(currentHealth + 10);
+
+        Console.WriteLine($"{Name} equipped {armorName}! Max HP is now {MaxHealth}");
+    }
+
+    // Можно переопределить урон, если хотим броню учитывать:
+    public override void DealDamage(int damage)
+    {
+        if (Armor != "No Armor")
+        {
+            damage = (int)(damage * 0.85); // броня снижает урон на 15%
+        }
+        base.DealDamage(damage); // вызываем базовый метод
+    }
+}
+
+class Enemy : Character
+{
+    public Enemy(string name, int maxHealth, int attack) : base(name, maxHealth, attack) { }
+    // Можно добавить специфичные для врага методы или переопределить базовые
+
+    public void AttackPlayer(Player player)
+    {
+        player.DealDamage(Attack);
+    }
+
+    public override void DealDamage(int damage)
+    {
+        if (random.Next(1, 101) <= 15) 
+        {
+            damage *= 2;
+            Console.WriteLine($"{Name} received a Critical Hit!");
+        }
+        base.DealDamage(damage);
+    }
+}
