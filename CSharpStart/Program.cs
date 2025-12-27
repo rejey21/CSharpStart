@@ -1,5 +1,6 @@
 ﻿// Here is the complete code for a simple C# console application that simulates a battle between a player and a mob using classes and methods.
 using System;
+using System.Numerics;
 class Program
 {
     static void Main()
@@ -976,7 +977,7 @@ class Character
     }
 
     // Method for dealing damage to the character
-    public virtual void DealDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         if (random.Next(1, 101) <= 20)
         {
@@ -1017,6 +1018,7 @@ class Character
     }
 }
 
+// Quest 13 && 14: Implement Inheritance in Player and Mob Classes
 class Player : Character
 {
     public bool HasPotion { get; private set; }
@@ -1043,7 +1045,14 @@ class Player : Character
 
     public void AttackEnemy(Enemy enemy)
     {
-        enemy.DealDamage(Attack);
+        Console.WriteLine($"{Name} attacks {enemy.Name}!");
+        enemy.TakeDamage(Attack);
+    }
+
+    public void IncreaseMaxHealth(int amount)
+    {
+        maxHealth += amount;
+        SetHealth(CurrentHealth + amount);
     }
 
     public void GiveEquipment(string armorName)
@@ -1054,40 +1063,37 @@ class Player : Character
         Armor = armorName;
         armorGiven = true;
 
-        maxHealth += 10;
-        SetHealth(currentHealth + 10);
-
+        IncreaseMaxHealth(10);
         Console.WriteLine($"{Name} equipped {armorName}! Max HP is now {MaxHealth}");
     }
 
-    // Можно переопределить урон, если хотим броню учитывать:
-    public override void DealDamage(int damage)
+    public override void TakeDamage(int damage) 
     {
-        if (Armor != "No Armor")
+        if (Armor != "No Armor") // Take reduced damage if armor is equipped
         {
-            damage = (int)(damage * 0.85); // броня снижает урон на 15%
+            damage = (int)(damage * 0.85); // armor reduces damage by 15%
         }
-        base.DealDamage(damage); // вызываем базовый метод
+        base.TakeDamage(damage);
     }
 }
 
 class Enemy : Character
 {
     public Enemy(string name, int maxHealth, int attack) : base(name, maxHealth, attack) { }
-    // Можно добавить специфичные для врага методы или переопределить базовые
 
     public void AttackPlayer(Player player)
     {
-        player.DealDamage(Attack);
+        Console.WriteLine($"{Name} attacks {player.Name}!");
+        player.TakeDamage(Attack);
     }
 
-    public override void DealDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         if (random.Next(1, 101) <= 15) 
         {
             damage *= 2;
             Console.WriteLine($"{Name} received a Critical Hit!");
         }
-        base.DealDamage(damage);
+        base.TakeDamage(damage);
     }
 }
